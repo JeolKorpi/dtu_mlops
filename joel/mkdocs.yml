@@ -1,0 +1,159 @@
+site_name: DTU-MLOps
+docs_dir: .
+site_dir: ../site
+repo_url: https://github.com/SkafteNicki/dtu_mlops
+edit_uri: edit/main/
+copyright: Copyright &copy; 2021 - 2024 Nicki Skafte Detlefsen
+
+theme:
+  language: en
+  name: material
+  favicon: figures/favicon.png
+  logo: figures/mlops_cycle.png
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: light blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.indexes
+    - navigation.footer
+    - content.code.copy
+    - content.code.annotate
+    - content.action.edit
+    - content.action.view
+    - content.tabs.link
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+plugins:
+  - search
+  - glightbox
+  - same-dir
+  - markdown-exec
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - exclude:
+      glob:
+        - tools/*
+        - reports/README.md
+        - s10_extra/design.md
+        - s10_extra/infrastructure_as_code.md
+        - s10_extra/kubernetes.md
+        - s10_extra/orchestration.md
+        - s10_extra/calibration.md
+        - s10_extra/quantization.md
+        - samples/README.md
+        - tools/README.md
+
+extra:
+  social:
+    - icon: material/email
+      link: mailto:skaftenicki@gmail.com
+    - icon: fontawesome/brands/github
+      link: https://github.com/SkafteNicki
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/nicki-skafte-detlefsen/
+
+nav:
+  - Home: README.md
+  - Time plan: pages/timeplan.md
+  - S1 - Development Environment 💻:
+    - s1_development_environment/README.md
+    - M1 - The command line: s1_development_environment/command_line.md
+    - M2 - Package Manager: s1_development_environment/package_manager.md
+    - M3 - Editor: s1_development_environment/editor.md
+    - M4 - Deep Learning Software: s1_development_environment/deep_learning_software.md
+  - S2 - Organisation and Version Control 📁:
+    - s2_organisation_and_version_control/README.md
+    - M5 - Git: s2_organisation_and_version_control/git.md
+    - M6 - Code structure: s2_organisation_and_version_control/code_structure.md
+    - M7 - Good coding practice: s2_organisation_and_version_control/good_coding_practice.md
+    - M8 - Data version control: s2_organisation_and_version_control/dvc.md
+    - M9 - Command Line Interfaces: s2_organisation_and_version_control/cli.md
+  - S3 - Reproducibility ♻️:
+    - s3_reproducibility/README.md
+    - M10 - Docker: s3_reproducibility/docker.md
+    - M11 - Config Files: s3_reproducibility/config_files.md
+  - S4 - Debugging, Profiling and Logging ⏱️:
+    - s4_debugging_and_logging/README.md
+    - M12 - Debugging: s4_debugging_and_logging/debugging.md
+    - M13 - Profiling: s4_debugging_and_logging/profiling.md
+    - M14 - Logging: s4_debugging_and_logging/logging.md
+    - M15 - Boilerplate: s4_debugging_and_logging/boilerplate.md
+  - S5 - Continuous Integration ✔️:
+    - s5_continuous_integration/README.md
+    - M16 - Unit testing: s5_continuous_integration/unittesting.md
+    - M17 - GitHub Actions: s5_continuous_integration/github_actions.md
+    - M18 - Pre-commit: s5_continuous_integration/pre_commit.md
+    - M19 - Continuous Machine Learning: s5_continuous_integration/cml.md
+  - S6 - The cloud 🌐:
+    - s6_the_cloud/README.md
+    - M20 - Cloud Setup: s6_the_cloud/cloud_setup.md
+    - M21 - Using the Cloud: s6_the_cloud/using_the_cloud.md
+  - S7 - Deployment 📦:
+    - s7_deployment/README.md
+    - M22 - Requests and APIs: s7_deployment/apis.md
+    - M23 - Cloud Deployment: s7_deployment/cloud_deployment.md
+    - M24 - API Testing: s7_deployment/testing_apis.md
+    - M25 - ML deployment: s7_deployment/ml_deployment.md
+    - M26 - Frontend: s7_deployment/frontend.md
+  - S8 - Monitoring 📊:
+    - s8_monitoring/README.md
+    - M27 - Data Drifting: s8_monitoring/data_drifting.md
+    - M28 - System Monitoring: s8_monitoring/monitoring.md
+  - S9 - Scalable applications ⚖️:
+    - s9_scalable_applications/README.md
+    - M29 - Distributed Data Loading: s9_scalable_applications/data_loading.md
+    - M30 - Distributed Training: s9_scalable_applications/distributed_training.md
+    - M31 - Scalable Inference: s9_scalable_applications/inference.md
+  - S10 - Extra 🔥:
+    - s10_extra/README.md
+    - M32 - Documentation: s10_extra/documentation.md
+    - M33 - Hyperparameter optimization: s10_extra/hyperparameters.md
+    - M34 - High Performance Clusters: s10_extra/high_performance_clusters.md
+
+    # - M35 - Designing Pipelines: s10_extra/design.md
+    # - M37 - Workflow orchestration: s10_extra/orchestration.md
+    # - M38 - Kubernetes: s10_extra/kubernetes.md
+    # - M39 - Infrastructure as code: infrastructure_as_code.md
+    # - M40 - Calibration: s10_extra/calibration.md
+    # - M41 - Quantization: s10_extra/quantization.md
+  - Summary: pages/overview.md
+  - Projects: pages/projects.md
+  - FAQ: pages/faq.md
