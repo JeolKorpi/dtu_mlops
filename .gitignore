@@ -8,3 +8,4 @@ wheels/
 
 # Virtual environments
 .venv
+s4_debugging_and_logging/exercise_files/.env

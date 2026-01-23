@@ -10,26 +10,16 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 from torchvision.utils import save_image
+from torch.profiler import profile, ProfilerActivity, tensorboard_trace_handler
+from pathlib import Path
 
-# Model Hyperparameters
-dataset_path = "datasets"
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-batch_size = 100
-x_dim = 784
-hidden_dim = 400
-latent_dim = 20
-lr = 1e-3
-epochs = 20
+# Use profiler schedule to limit profiling overhead
+from torch.profiler import schedule
 
 
-# Data loading
-mnist_transform = transforms.Compose([transforms.ToTensor()])
-
-train_dataset = MNIST(dataset_path, transform=mnist_transform, train=True, download=True)
-test_dataset = MNIST(dataset_path, transform=mnist_transform, train=False, download=True)
-
-train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
-test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+###### UNCOMMENT FOR DEBUGGING ######
+# import pdb
+# pdb.set_trace()
 
 
 class Encoder(nn.Module):
@@ -48,13 +38,14 @@ class Encoder(nn.Module):
         h_ = torch.relu(self.FC_input(x))
         mean = self.FC_mean(h_)
         log_var = self.FC_var(h_)
-        z = self.reparameterization(mean, log_var)
+        std = torch.exp(0.5 * log_var)
+        z = self.reparameterization(mean, std)
         return z, mean, log_var
 
-    def reparameterization(self, mean, var):
+    def reparameterization(self, mean, std):
         """Reparameterization trick to sample z values."""
-        epsilon = torch.randn(*var.shape)
-        return mean + var * epsilon
+        epsilon = torch.randn_like(std)
+        return mean + std * epsilon
 
 
 class Decoder(nn.Module):
@@ -63,7 +54,7 @@ class Decoder(nn.Module):
     def __init__(self, latent_dim, hidden_dim, output_dim) -> None:
         super().__init__()
         self.FC_hidden = nn.Linear(latent_dim, hidden_dim)
-        self.FC_output = nn.Linear(latent_dim, output_dim)
+        self.FC_output = nn.Linear(hidden_dim, output_dim)
 
     def forward(self, x):
         """Forward pass of the decoder module."""
@@ -87,66 +78,133 @@ class Model(nn.Module):
         return x_hat, mean, log_var
 
 
-encoder = Encoder(input_dim=x_dim, hidden_dim=hidden_dim, latent_dim=latent_dim)
-decoder = Decoder(latent_dim=latent_dim, hidden_dim=hidden_dim, output_dim=x_dim)
-
-model = Model(encoder=encoder, decoder=decoder).to(DEVICE)
-
-BCE_loss = nn.BCELoss()
-
-
-def loss_function(x, x_hat, mean, log_var):
-    """Elbo loss function."""
-    reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction="sum")
-    kld = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp())
-    return reproduction_loss + kld
-
-
-optimizer = Adam(model.parameters(), lr=lr)
-
-print("Start training VAE...")
-model.train()
-for epoch in range(epochs):
-    overall_loss = 0
-    for batch_idx, (x, _) in enumerate(train_loader):
-        if batch_idx % 100 == 0:
-            print(batch_idx)
-        x = x.view(batch_size, x_dim)
-        x = x.to(DEVICE)
-
-        x_hat, mean, log_var = model(x)
-        loss = loss_function(x, x_hat, mean, log_var)
-
-        overall_loss += loss.item()
-
-        loss.backward()
-        optimizer.step()
-    print(
-        "\tEpoch",
-        epoch + 1,
-        "complete!",
-        "\tAverage Loss: ",
-        overall_loss / (batch_idx * batch_size),
+if __name__ == '__main__':
+    # Model Hyperparameters
+    dataset_path = "datasets"
+    DEVICE = torch.device(
+        "cuda"
+        if torch.cuda.is_available()
+        else "mps"
+        if torch.backends.mps.is_available()
+        else "cpu"
     )
-print("Finish!!")
+    batch_size = 100
+    x_dim = 784
+    hidden_dim = 400
+    latent_dim = 20
+    lr = 1e-3
+    epochs = 3
 
-# Generate reconstructions
-model.eval()
-with torch.no_grad():
-    for batch_idx, (x, _) in enumerate(test_loader):
-        if batch_idx % 100 == 0:
-            print(batch_idx)
-        x = x.view(batch_size, x_dim)
-        x = x.to(DEVICE)
-        x_hat, _, _ = model(x)
-        break
 
-save_image(x.view(batch_size, 1, 28, 28), "orig_data.png")
-save_image(x_hat.view(batch_size, 1, 28, 28), "reconstructions.png")
+    # Data loading
+    mnist_transform = transforms.Compose([transforms.ToTensor()])
 
-# Generate samples
-with torch.no_grad():
-    noise = torch.randn(batch_size, latent_dim).to(DEVICE)
-    generated_images = decoder(noise)
+    train_dataset = MNIST(
+        dataset_path, transform=mnist_transform, train=True, download=True
+    )
+    test_dataset = MNIST(
+        dataset_path, transform=mnist_transform, train=False, download=True
+    )
 
-save_image(generated_images.view(batch_size, 1, 28, 28), "generated_sample.png")
+    train_loader = DataLoader(
+        dataset=train_dataset, batch_size=batch_size, shuffle=True, num_workers=4
+    )
+    test_loader = DataLoader(
+        dataset=test_dataset, batch_size=batch_size, shuffle=False, num_workers=4
+    )
+
+
+    encoder = Encoder(input_dim=x_dim, hidden_dim=hidden_dim, latent_dim=latent_dim)
+    decoder = Decoder(latent_dim=latent_dim, hidden_dim=hidden_dim, output_dim=x_dim)
+
+    model = Model(encoder=encoder, decoder=decoder).to(DEVICE)
+
+    BCE_loss = nn.BCELoss()
+
+
+    def loss_function(x, x_hat, mean, log_var):
+        """Elbo loss function."""
+        reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction="sum")
+        kld = -0.5 * torch.sum(1 + log_var - mean.pow(2) - log_var.exp())
+        return reproduction_loss + kld
+
+
+    optimizer = Adam(model.parameters(), lr=lr)
+
+    # Create log directory for profiler traces
+    log_dir = Path("./log/vae_profile")
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    # Profile activities based on device availability
+    activities = [ProfilerActivity.CPU]
+    if torch.cuda.is_available():
+        activities.append(ProfilerActivity.CUDA)
+
+    print("Start training VAE...")
+    model.train()
+
+
+    with profile(
+        activities=activities,
+        schedule=schedule(wait=1, warmup=1, active=3, repeat=2),
+        profile_memory=True,
+        with_stack=True,
+        on_trace_ready=tensorboard_trace_handler(str(log_dir) + "_train"),
+    ) as prof:
+        for epoch in range(epochs):
+            overall_loss = 0
+            for batch_idx, (x, _) in enumerate(train_loader):
+                if batch_idx % 100 == 0:
+                    print(batch_idx)
+                x = x.view(batch_size, x_dim)
+                x = x.to(DEVICE)
+
+                x_hat, mean, log_var = model(x)
+                loss = loss_function(x, x_hat, mean, log_var)
+
+                overall_loss += loss.item()
+
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+                # Only profile first 20 batches to avoid overwhelming the profiler
+                if batch_idx < 20:
+                    prof.step()
+            print(
+                "\tEpoch",
+                epoch + 1,
+                "complete!",
+                "\tAverage Loss: ",
+                overall_loss / (batch_idx * batch_size),
+            )
+    print("Finish!!")
+
+    # Generate reconstructions
+    print("Generating reconstructions and samples...")
+    model.eval()
+    with profile(
+        activities=activities,
+        profile_memory=True,
+        with_stack=True,
+        on_trace_ready=tensorboard_trace_handler(str(log_dir) + "_eval"),
+    ) as prof:
+        with torch.no_grad():
+            for batch_idx, (x, _) in enumerate(test_loader):
+                if batch_idx % 100 == 0:
+                    print(batch_idx)
+                x = x.view(batch_size, x_dim)
+                x = x.to(DEVICE)
+                x_hat, _, _ = model(x)
+                prof.step()
+                break
+
+        save_image(x.view(batch_size, 1, 28, 28), "orig_data.png")
+        save_image(x_hat.view(batch_size, 1, 28, 28), "reconstructions.png")
+
+        # Generate samples
+        noise = torch.randn(batch_size, latent_dim).to(DEVICE)
+        generated_images = decoder(noise)
+        prof.step()
+
+    save_image(generated_images.view(batch_size, 1, 28, 28), "generated_sample.png")
