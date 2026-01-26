@@ -1,0 +1,68 @@
+_wandb:
+    value:
+        cli_version: 0.24.0
+        e:
+            56ljxig35nrgm9iswi7ddrxfyt3uw5u2:
+                codePath: s4_debugging_and_logging\exercise_files\vae_mnist_bugs.py
+                codePathLocal: s4_debugging_and_logging\exercise_files\vae_mnist_bugs.py
+                cpu_count: 4
+                cpu_count_logical: 8
+                cudaVersion: "11.7"
+                disk:
+                    /:
+                        total: "1023012761600"
+                        used: "790660411392"
+                email: Joelkorpi2001@gmail.com
+                executable: C:\Users\joelk\Desktop\DTU_MLOPS\.venv\Scripts\python.exe
+                git:
+                    commit: 885bae0513a1584167a6b142d63c321e4f639759
+                    remote: https://github.com/JeolKorpi/dtu_mlops.git
+                gpu: NVIDIA GeForce MX350
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Pascal
+                      cudaCores: 640
+                      memoryTotal: "2147483648"
+                      name: NVIDIA GeForce MX350
+                      uuid: GPU-25622999-3dad-815e-4f7d-7c87bbf3009d
+                host: LAPTOP-E0BGNU52
+                memory:
+                    total: "16883044352"
+                os: Windows-11-10.0.26200-SP0
+                program: C:\Users\joelk\Desktop\DTU_MLOPS\s4_debugging_and_logging\exercise_files\vae_mnist_bugs.py
+                python: CPython 3.13.11
+                root: C:\Users\joelk\Desktop\DTU_MLOPS
+                startedAt: "2026-01-26T08:29:33.182116Z"
+                writerId: 56ljxig35nrgm9iswi7ddrxfyt3uw5u2
+        m: []
+        python_version: 3.13.11
+        t:
+            "1":
+                - 1
+                - 41
+            "2":
+                - 1
+                - 41
+            "3":
+                - 2
+                - 3
+                - 16
+            "4": 3.13.11
+            "5": 0.24.0
+            "8":
+                - 2
+                - 3
+            "12": 0.24.0
+            "13": windows-amd64
+batch_size:
+    value: 100
+epochs:
+    value: 3
+hidden_dim:
+    value: 400
+latent_dim:
+    value: 20
+lr:
+    value: 0.001
+x_dim:
+    value: 784

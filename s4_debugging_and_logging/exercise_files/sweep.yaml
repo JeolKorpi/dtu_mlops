@@ -1,0 +1,31 @@
+method: bayes
+name: sweepdemo
+metric:
+  goal: minimize
+  name: validation_loss
+parameters:
+  batch_size:
+    distribution: int_uniform
+    max: 200
+    min: 50
+  epochs:
+    distribution: int_uniform
+    max: 10
+    min: 2
+  hidden_dim:
+    distribution: int_uniform
+    max: 800
+    min: 200
+  latent_dim:
+    distribution: int_uniform
+    max: 40
+    min: 10
+  lr:
+    distribution: log_uniform
+    max: 0.002
+    min: 0.0005
+  x_dim:
+    distribution: int_uniform
+    max: 1568
+    min: 392
+program: vae_mnist_bugs.py

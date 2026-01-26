@@ -1,0 +1,24 @@
+2026-01-26 09:37:13,112 INFO    MainThread:20904 [wandb_setup.py:_flush():81] Current SDK version is 0.24.0
+2026-01-26 09:37:13,112 INFO    MainThread:20904 [wandb_setup.py:_flush():81] Configure stats pid to 20904
+2026-01-26 09:37:13,113 INFO    MainThread:20904 [wandb_setup.py:_flush():81] Loading settings from environment variables
+2026-01-26 09:37:13,113 INFO    MainThread:20904 [wandb_init.py:setup_run_log_directory():717] Logging user logs to C:\Users\joelk\Desktop\DTU_MLOPS\wandb\run-20260126_093713-mfsq0ywb\logs\debug.log
+2026-01-26 09:37:13,114 INFO    MainThread:20904 [wandb_init.py:setup_run_log_directory():718] Logging internal logs to C:\Users\joelk\Desktop\DTU_MLOPS\wandb\run-20260126_093713-mfsq0ywb\logs\debug-internal.log
+2026-01-26 09:37:13,116 INFO    MainThread:20904 [wandb_init.py:init():844] calling init triggers
+2026-01-26 09:37:13,116 INFO    MainThread:20904 [wandb_init.py:init():849] wandb.init called with sweep_config: {}
+config: {'batch_size': 100, 'x_dim': 784, 'hidden_dim': 400, 'latent_dim': 20, 'lr': 0.001, 'epochs': 5, '_wandb': {}}
+2026-01-26 09:37:13,117 INFO    MainThread:20904 [wandb_init.py:init():892] starting backend
+2026-01-26 09:37:17,076 INFO    MainThread:20904 [wandb_init.py:init():895] sending inform_init request
+2026-01-26 09:37:17,173 INFO    MainThread:20904 [wandb_init.py:init():903] backend started and connected
+2026-01-26 09:37:17,217 INFO    MainThread:20904 [wandb_init.py:init():973] updated telemetry
+2026-01-26 09:37:17,314 INFO    MainThread:20904 [wandb_init.py:init():997] communicating run to backend with 90.0 second timeout
+2026-01-26 09:37:18,525 INFO    MainThread:20904 [wandb_init.py:init():1044] starting run threads in backend
+2026-01-26 09:37:18,968 INFO    MainThread:20904 [wandb_run.py:_console_start():2529] atexit reg
+2026-01-26 09:37:18,969 INFO    MainThread:20904 [wandb_run.py:_redirect():2377] redirect: wrap_raw
+2026-01-26 09:37:18,969 INFO    MainThread:20904 [wandb_run.py:_redirect():2446] Wrapping output streams.
+2026-01-26 09:37:18,969 INFO    MainThread:20904 [wandb_run.py:_redirect():2469] Redirects installed.
+2026-01-26 09:37:19,033 INFO    MainThread:20904 [wandb_init.py:init():1084] run started, returning control to user process
+2026-01-26 09:37:31,653 INFO    MainThread:20904 [wandb_run.py:_finish():2295] finishing run jeolkorpi-netlight/M14_module/mfsq0ywb
+2026-01-26 09:37:31,655 INFO    MainThread:20904 [wandb_run.py:_atexit_cleanup():2494] got exitcode: 1
+2026-01-26 09:37:31,656 INFO    MainThread:20904 [wandb_run.py:_restore():2476] restore
+2026-01-26 09:37:31,656 INFO    MainThread:20904 [wandb_run.py:_restore():2482] restore done
+2026-01-26 09:37:32,620 INFO    MainThread:20904 [wandb_run.py:_footer_sync_info():3870] logging synced files

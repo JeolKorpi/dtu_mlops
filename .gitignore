@@ -8,4 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Env file with secrets
 s4_debugging_and_logging/exercise_files/.env
+
+# Log files for profiler
+s4_debugging_and_logging/exercise_files/log
+s4_debugging_and_logging/exercise_files/log/**

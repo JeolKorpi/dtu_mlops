@@ -1,0 +1,39 @@
+Start training VAE...
+0
+100
+200
+300
+400
+500
+	Epoch 1 complete! 	Average Loss:  155.63939581920388
+0
+100
+200
+300
+400
+500
+	Epoch 2 complete! 	Average Loss:  118.51693453933639
+0
+100
+200
+300
+400
+500
+	Epoch 3 complete! 	Average Loss:  113.05835287001774
+0
+100
+200
+300
+400
+500
+	Epoch 4 complete! 	Average Loss:  110.62380221919345
+0
+100
+200
+300
+400
+500
+	Epoch 5 complete! 	Average Loss:  109.16510874243531
+Finish!!
+Generating reconstructions and samples...
+0

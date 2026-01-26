@@ -1,0 +1,29 @@
+Start training VAE...
+Traceback (most recent call last):
+  File "C:\Users\joelk\Desktop\DTU_MLOPS\s4_debugging_and_logging\exercise_files\vae_mnist_bugs.py", line 177, in <module>
+    for batch_idx, (x, _) in enumerate(train_loader):
+                             ~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\joelk\Desktop\DTU_MLOPS\.venv\Lib\site-packages\torch\utils\data\dataloader.py", line 732, in __next__
+    data = self._next_data()
+  File "C:\Users\joelk\Desktop\DTU_MLOPS\.venv\Lib\site-packages\torch\utils\data\dataloader.py", line 1482, in _next_data
+    idx, data = self._get_data()
+                ~~~~~~~~~~~~~~^^
+  File "C:\Users\joelk\Desktop\DTU_MLOPS\.venv\Lib\site-packages\torch\utils\data\dataloader.py", line 1444, in _get_data
+    success, data = self._try_get_data()
+                    ~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\joelk\Desktop\DTU_MLOPS\.venv\Lib\site-packages\torch\utils\data\dataloader.py", line 1275, in _try_get_data
+    data = self._data_queue.get(timeout=timeout)
+  File "C:\Users\joelk\AppData\Roaming\uv\python\cpython-3.13.11-windows-x86_64-none\Lib\multiprocessing\queues.py", line 111, in get
+    if not self._poll(timeout):
+           ~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\joelk\AppData\Roaming\uv\python\cpython-3.13.11-windows-x86_64-none\Lib\multiprocessing\connection.py", line 257, in poll
+    return self._poll(timeout)
+           ~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\joelk\AppData\Roaming\uv\python\cpython-3.13.11-windows-x86_64-none\Lib\multiprocessing\connection.py", line 346, in _poll
+    return bool(wait([self], timeout))
+                ~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\joelk\AppData\Roaming\uv\python\cpython-3.13.11-windows-x86_64-none\Lib\multiprocessing\connection.py", line 1096, in wait
+    ready_handles = _exhaustive_wait(waithandle_to_obj.keys(), timeout)
+  File "C:\Users\joelk\AppData\Roaming\uv\python\cpython-3.13.11-windows-x86_64-none\Lib\multiprocessing\connection.py", line 1028, in _exhaustive_wait
+    res = _winapi.WaitForMultipleObjects(short_L, False, timeout)
+KeyboardInterrupt
