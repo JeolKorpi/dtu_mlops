@@ -7,7 +7,13 @@ import typer
 from data import corrupt_mnist
 from model import JoelsAwesomeModel
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+DEVICE = torch.device(
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps"
+    if torch.backends.mps.is_available()
+    else "cpu"
+)
 
 
 def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 5) -> None:
@@ -47,11 +53,24 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 5) -> None:
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))
     # Calculate moving average loss per epoch
 
-    axs[0].set_title(f"CNN Performance, \n(lr={lr}, epochs={epochs}, batch={batch_size})", fontsize=11)
+    axs[0].set_title(
+        f"CNN Performance, \n(lr={lr}, epochs={epochs}, batch={batch_size})",
+        fontsize=11,
+    )
     ax0_twin = axs[0].twiny()
     axs[0].plot(statistics["train_loss"], alpha=0.7, label="Batch loss")
-    epoch_loss = [statistics["train_loss"][i] for i in range(0, len(statistics["train_loss"]), len(trainloader))]
-    ax0_twin.plot(range(len(epoch_loss)), epoch_loss, alpha=0.9, linewidth=2, label="Epoch loss", color="orange")
+    epoch_loss = [
+        statistics["train_loss"][i]
+        for i in range(0, len(statistics["train_loss"]), len(trainloader))
+    ]
+    ax0_twin.plot(
+        range(len(epoch_loss)),
+        epoch_loss,
+        alpha=0.9,
+        linewidth=2,
+        label="Epoch loss",
+        color="orange",
+    )
     axs[0].set_ylabel("Loss", fontsize=10)
     axs[0].set_xlabel("Batch", fontsize=10)
     lines1, labels1 = axs[0].get_legend_handles_labels()
@@ -61,11 +80,17 @@ def train(lr: float = 1e-3, batch_size: int = 32, epochs: int = 5) -> None:
 
     axs[1].plot(statistics["train_accuracy"], alpha=0.7, label="Batch accuracy")
     epoch_accuracy = [
-        statistics["train_accuracy"][i] for i in range(0, len(statistics["train_accuracy"]), len(trainloader))
+        statistics["train_accuracy"][i]
+        for i in range(0, len(statistics["train_accuracy"]), len(trainloader))
     ]
     ax1_twin = axs[1].twiny()
     ax1_twin.plot(
-        range(len(epoch_accuracy)), epoch_accuracy, alpha=0.9, linewidth=2, label="Epoch accuracy", color="orange"
+        range(len(epoch_accuracy)),
+        epoch_accuracy,
+        alpha=0.9,
+        linewidth=2,
+        label="Epoch accuracy",
+        color="orange",
     )
     axs[1].set_title("Train accuracy", fontsize=11)
     axs[1].set_ylabel("Accuracy", fontsize=10)

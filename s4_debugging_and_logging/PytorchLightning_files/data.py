@@ -4,6 +4,7 @@ import torch
 import typer
 from torch.utils.data import Dataset
 
+
 class MyDataset(Dataset):
     """Custom dataset for corrupt MNIST."""
 
@@ -12,13 +13,15 @@ class MyDataset(Dataset):
         self.data_dir = Path(data_dir)
         if train:
             imgs, targets = [], []
-            for i in range(0,10):
+            for i in range(0, 10):
                 imgs.append(torch.load(self.data_dir / f"train_images_{i}.pt"))
                 targets.append(torch.load(self.data_dir / f"train_target_{i}.pt"))
             self.images = torch.cat(imgs).unsqueeze(1).float()
             self.targets = torch.cat(targets).long()
         else:
-            self.images = torch.load(self.data_dir / "test_images.pt").unsqueeze(1).float()
+            self.images = (
+                torch.load(self.data_dir / "test_images.pt").unsqueeze(1).float()
+            )
             self.targets = torch.load(self.data_dir / "test_target.pt").long()
         self.images = (self.images - self.images.mean()) / self.images.std()
 
@@ -55,7 +58,7 @@ def preprocess_data(raw_dir: str, processed_dir: str) -> None:
 
     print(f"Length of train_images: {len(train_images)}")
     print(f"Length of test_images: {len(test_images)}")
-    
+
     train_images = normalize(train_images)
     test_images = normalize(test_images)
 

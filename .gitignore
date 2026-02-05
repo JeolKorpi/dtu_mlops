@@ -23,4 +23,7 @@ wandb/
 wandb-registrery-DTU_MLOPS/
 
 # Data files
-s4_debugging_and_logging\PytorchLightning_files\data
+s4_debugging_and_logging/PytorchLightning_files/data/
+s4_debugging_and_logging/PytorchLightning_files/data/**
+data/
+data/**

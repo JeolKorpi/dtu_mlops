@@ -1,5 +1,7 @@
 import torch
-from model import JoelsAwesomeModel
+import pytest
+from s4_debugging_and_logging.PytorchLightning_files.model import JoelsAwesomeModel
+
 
 def test_training():
     """Training-step sanity checks.
@@ -53,6 +55,7 @@ def test_training_step_runs_and_returns_loss():
 
     loss_val = model.validation_step((images, targets))
     assert torch.isfinite(loss_val)
+
 
 def test_optimizer():
     model = JoelsAwesomeModel()
