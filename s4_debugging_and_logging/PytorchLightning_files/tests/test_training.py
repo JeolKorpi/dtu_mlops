@@ -1,6 +1,6 @@
 import torch
 import pytest
-from s4_debugging_and_logging.PytorchLightning_files.model import JoelsAwesomeModel
+from model import JoelsAwesomeModel
 
 
 def test_training():

@@ -1,6 +1,6 @@
 from . import _PATH_DATA
 import torch
-from s4_debugging_and_logging.PytorchLightning_files.model import JoelsAwesomeModel
+from model import JoelsAwesomeModel
 import pytest
 
 
