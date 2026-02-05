@@ -11,7 +11,11 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torchvision.datasets import MNIST
 from torchvision.utils import save_image
+from torch.profiler import profile, ProfilerActivity, tensorboard_trace_handler
 from pathlib import Path
+
+# Use profiler schedule to limit profiling overhead
+from torch.profiler import schedule
 
 ###### UNCOMMENT FOR DEBUGGING ######
 # import pdb
@@ -150,62 +154,88 @@ if __name__ == "__main__":
 
         optimizer = Adam(model.parameters(), lr=config["lr"])
 
+        # Create log directory for profiler traces
+        log_dir = Path("./log/vae_profile")
+        log_dir.mkdir(parents=True, exist_ok=True)
+
+        # Profile activities based on device availability
+        activities = [ProfilerActivity.CPU]
+        if torch.cuda.is_available():
+            activities.append(ProfilerActivity.CUDA)
+
         print("Start training VAE...")
         model.train()
 
-        for epoch in range(config["epochs"]):
-            overall_loss = 0
-            for batch_idx, (x, _) in enumerate(train_loader):
-                if batch_idx % 100 == 0:
-                    print(batch_idx)
-                x = x.view(config["batch_size"], config["x_dim"])
-                x = x.to(DEVICE)
+        with profile(
+            activities=activities,
+            schedule=schedule(wait=1, warmup=1, active=3, repeat=2),
+            profile_memory=True,
+            with_stack=True,
+            on_trace_ready=tensorboard_trace_handler(str(log_dir) + "_train"),
+        ) as prof:
+            for epoch in range(config["epochs"]):
+                overall_loss = 0
+                for batch_idx, (x, _) in enumerate(train_loader):
+                    if batch_idx % 100 == 0:
+                        print(batch_idx)
+                    x = x.view(config["batch_size"], config["x_dim"])
+                    x = x.to(DEVICE)
 
-                x_hat, mean, log_var = model(x)
-                loss, reproduction_loss, kld = loss_function(
-                    x, x_hat, mean, log_var
+                    x_hat, mean, log_var = model(x)
+                    loss, reproduction_loss, kld = loss_function(
+                        x, x_hat, mean, log_var
+                    )
+
+                    overall_loss += loss.item()
+
+                    optimizer.zero_grad()
+                    loss.backward()
+                    optimizer.step()
+
+                    # Calculate reconstruction accuracy (% of pixels correctly reconstructed)
+                    x_hat_binary = (x_hat > 0.5).float()
+                    accuracy = (x_hat_binary == x).float().mean().item()
+
+                    run.log(
+                        {
+                            "train_loss": loss.item(),
+                            "train_reconstruction_loss": reproduction_loss.item(),
+                            "train_kld": kld.item(),
+                            "train_reconstruction_accuracy": accuracy,
+                        }
+                    )
+                    # Only profile first 20 batches to avoid overwhelming the profiler
+                    if batch_idx < 20:
+                        prof.step()
+                print(
+                    "\tEpoch",
+                    epoch + 1,
+                    "complete!",
+                    "\tAverage Loss: ",
+                    overall_loss / (batch_idx * config["batch_size"]),
                 )
-
-                overall_loss += loss.item()
-
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-                # Calculate reconstruction accuracy (% of pixels correctly reconstructed)
-                x_hat_binary = (x_hat > 0.5).float()
-                accuracy = (x_hat_binary == x).float().mean().item()
-
-                run.log(
-                    {
-                        "train_loss": loss.item(),
-                        "train_reconstruction_loss": reproduction_loss.item(),
-                        "train_kld": kld.item(),
-                        "train_reconstruction_accuracy": accuracy,
-                    }
-                )
-            print(
-                "\tEpoch",
-                epoch + 1,
-                "complete!",
-                "\tAverage Loss: ",
-                overall_loss / (batch_idx * config["batch_size"]),
-            )
         print("Finish!!")
 
         # Generate reconstructions
         print("Generating reconstructions and samples...")
         model.eval()
-        with torch.no_grad():
-            for batch_idx, (x, _) in enumerate(test_loader):
-                if batch_idx % 100 == 0:
-                    print(batch_idx)
-                x = x.view(config["batch_size"], config["x_dim"])
-                x = x.to(DEVICE)
-                x_hat, _, _ = model(x)
-                loss, reproduction_loss, kld = loss_function(x, x_hat, _, _)
-                run.log({"reconstruction_example_loss": loss.item()})
-                break
+        with profile(
+            activities=activities,
+            profile_memory=True,
+            with_stack=True,
+            on_trace_ready=tensorboard_trace_handler(str(log_dir) + "_eval"),
+        ) as prof:
+            with torch.no_grad():
+                for batch_idx, (x, _) in enumerate(test_loader):
+                    if batch_idx % 100 == 0:
+                        print(batch_idx)
+                    x = x.view(config["batch_size"], config["x_dim"])
+                    x = x.to(DEVICE)
+                    x_hat, _, _ = model(x)
+                    loss, reproduction_loss, kld = loss_function(x, x_hat, _, _)
+                    run.log({"reconstruction_example_loss": loss.item()})
+                    prof.step()
+                    break
 
             save_image(x.view(config["batch_size"], 1, 28, 28), "orig_data.png")
             save_image(
@@ -215,6 +245,7 @@ if __name__ == "__main__":
             # Generate samples
             noise = torch.randn(config["batch_size"], config["latent_dim"]).to(DEVICE)
             generated_images = decoder(noise)
+            prof.step()
 
         save_image(
             generated_images.view(config["batch_size"], 1, 28, 28),

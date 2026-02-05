@@ -12,6 +12,15 @@ wheels/
 # Env file with secrets
 s4_debugging_and_logging/exercise_files/.env
 
-# Log files for profiler
+# Log files for profiler and WandB files
 s4_debugging_and_logging/exercise_files/log
 s4_debugging_and_logging/exercise_files/log/**
+log/vae_profile_eval
+log/vae_profile_train
+log/
+logs/
+wandb/
+wandb-registrery-DTU_MLOPS/
+
+# Data files
+s4_debugging_and_logging\PytorchLightning_files\data

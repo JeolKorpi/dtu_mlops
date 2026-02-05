@@ -2,7 +2,13 @@ method: bayes
 name: sweepdemo
 metric:
   goal: minimize
-  name: validation_loss
+  name: train_loss
+command:
+  - uv
+  - run
+  - python
+  - ${program}
+  - ${args}
 parameters:
   batch_size:
     distribution: int_uniform
@@ -21,11 +27,11 @@ parameters:
     max: 40
     min: 10
   lr:
-    distribution: log_uniform
+    distribution: log_uniform_values
     max: 0.002
     min: 0.0005
   x_dim:
     distribution: int_uniform
     max: 1568
     min: 392
-program: vae_mnist_bugs.py
+program: .\s4_debugging_and_logging\exercise_files\vae_mnist_bugs.py
