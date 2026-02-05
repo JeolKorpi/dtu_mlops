@@ -1208,7 +1208,7 @@ requires-dist = [
     { name = "snakeviz", specifier = ">=2.2.2" },
     { name = "torch", specifier = ">=2.9.1", index = "https://download.pytorch.org/whl/cpu" },
     { name = "torch-tb-profiler", specifier = ">=0.4.3" },
-    { name = "torchvision", specifier = ">=0.15.2" },
+    { name = "torchvision", specifier = ">=0.17.0" },
     { name = "typer", specifier = ">=0.21.1" },
     { name = "wandb", specifier = ">=0.24.0" },
 ]
